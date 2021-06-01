@@ -1,0 +1,26 @@
+{
+  "name": "covid19sl",
+  "version": "1.0.0",
+  "description": "Tweets out coronavirus analytics in Sri Lanka with dynamic charts every hour",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shameel-Fazul/COVID19SL.git"
+  },
+  "keywords": [
+    "coronavirus",
+    "srilanka\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D"
+  ],
+  "author": "Shameel Fazul",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Shameel-Fazul/COVID19SL/issues"
+  },
+  "homepage": "https://github.com/Shameel-Fazul/COVID19SL#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0"
+  }
+}
