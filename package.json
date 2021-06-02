@@ -21,6 +21,18 @@
   },
   "homepage": "https://github.com/Shameel-Fazul/COVID19SL#readme",
   "dependencies": {
-    "dotenv": "^10.0.0"
+    "chart.js": "^2.9.3",
+    "chart.js-image": "^5.6.0",
+    "chartjs-node-canvas": "^3.0.6",
+    "discord-webhook-node": "^1.1.8",
+    "dotenv": "^9.0.2",
+    "heroku-awake": "^1.0.10",
+    "moment": "^2.29.1",
+    "mongoose": "^5.12.8",
+    "node-cron": "^3.0.0",
+    "node-fetch": "^2.6.1",
+    "text-to-image": "^2.4.4",
+    "timezone-support": "^2.0.2",
+    "twit": "^2.2.11"
   }
 }
