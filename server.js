@@ -202,7 +202,7 @@ cron.schedule('0 0-23 * * *', async () => {
     local_day != moment(data.update_date_time).format('dddd') ? (data.local_new_deaths = 0) : (null)
     data.local_new_deaths != await death_index() ? (death_report(data)) : (null)
     
-    switch(moment(data.update_date_time).format('dddd')) {
+    switch(local_day) {
         case 'Monday':
             await logs.findByIdAndUpdate({ _id: id }, { Monday: data.local_new_cases.toString() })
             await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: data.local_new_deaths.toString() })
