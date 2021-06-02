@@ -20,10 +20,11 @@ const hook = new Webhook(process.env.discord_webhook);
 
 const server = http.createServer((req, res) => {
     if (req.method == 'GET' && req.url === '/') {
-        let file = fs.readFileSync('./client/index.html')
-        res.write(file)
+        res.writeHead(200, {"Content-Type": "application/json"})
+        res.write(JSON.stringify({ COVID19SL: 'server is running'}))
     } else if (req.method == 'POST' && req.url == '/') {
-        console.log(req.body)
+        res.writeHead(200, {"Content-Type": "application/json"})
+        res.write(JSON.stringify({ COVID19SL: 'panel is inactive'}))
     }
     res.end()
 })
@@ -42,11 +43,13 @@ class Report {
         this.cases_yesterday = stats.local_yesterday_cases
         this.pcr_tests = stats.total_pcr_testing_count
     }
+    
     tweet(report_type) {
         if (report_type == 'week report') {
-            
-            const week_chart = fs.readFileSync('./chart_week.png', { encoding: 'base64' })
-
+            while (!fs.existsSync(__dirname + '/chart_week.png')) {
+                console.log('week chart does not exist')
+            }
+            const week_chart = fs.readFileSync(__dirname + '/chart_week.png', { encoding: 'base64' })
             T.post('media/upload', { media_data: week_chart }, (err, data) => {
                 let text = `Coronavirus Cases in Sri Lanka is currently ${this.total_cases}!\n\n→ Active : ${this.active}\n→ Cases Today : ${this.cases_today}\n→ Deaths : ${this.deaths}\n→ Cases Yesterday : ${this.cases_yesterday}\n→ Recovered : ${this.recovered}\n→ Deaths Today : ${this.deaths_today}\n→ Total PCR Tests : ${this.pcr_tests}`;
                 let tweet = {
@@ -54,7 +57,7 @@ class Report {
                     media_ids: [data.media_id_string]
                 }
                 T.post('statuses/update', tweet, (err) => {
-                    fs.unlinkSync('./chart_week.png')
+                    fs.unlinkSync(__dirname + '/chart_week.png')
                     hook.setUsername(`Shameel Server - @COVID19_SL`);
                     hook.setAvatar(process.env.avatar);
                     hook.send(text)
@@ -64,7 +67,10 @@ class Report {
             })
         } 
         else if (report_type == 'death report') {
-            let death_chart = fs.readFileSync('./chart_death.png', { encoding: 'base64' })
+            while (!fs.existsSync(__dirname + '/chart_death.png')) {
+                console.log('death chart does not exist')
+            }
+            let death_chart = fs.readFileSync(__dirname + '/chart_death.png', { encoding: 'base64' })
             T.post('media/upload', { media_data: death_chart }, (err, data) => {
                 let text = `${this.deaths_today} new reported deaths today in Sri Lanka, bringing the total to ${this.deaths} deaths!`;
                 let tweet = {
@@ -72,7 +78,7 @@ class Report {
                     media_ids: [data.media_id_string]
                 }
                 T.post('statuses/update', tweet, (err) => {
-                    fs.unlinkSync('./chart_death.png')
+                    fs.unlinkSync(__dirname + '/chart_death.png')
                     if (err) throw Error(err)
                     else return;
                 })
@@ -188,8 +194,7 @@ cron.schedule('0 0-23 * * *', async () => {
     let data = res.data
     let date = new Date()
     let local_timezone = displayTime(date, findTimeZone('Asia/Colombo'))
-    let local_day = moment(local_timezone).format('dddd');
-    let local_hour = displayHour(date, findTimeZone('Asia/Colombo'))
+    let local_day = moment(local_timezone).format('dddd')
     let local_timezone_format = moment(local_timezone).format('LLLL')
     let death_index = () => logs.findById(id).then(index => index.Deaths_Today)
 
@@ -231,11 +236,14 @@ cron.schedule('0 0-23 * * *', async () => {
     }
     let week_data = await logs.findById(id)
     let day_data = Object.assign(data, { local_yesterday_cases: parseInt(week_data.Yesterday) })
-    let report = new Report(day_data)
+    let get = new Report(day_data)
 
     try {
-        await report.chart_week(week_data, local_timezone_format)
-        await report.tweet('week report')
+        await get.chart_week(week_data, local_timezone_format)
+        setTimeout(async () => { 
+            let report = new Report(day_data)
+            await report.tweet('week report')
+        }, 10000);
     }
     catch (err) {
         console.error(err.message)
