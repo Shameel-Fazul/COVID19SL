@@ -29,7 +29,7 @@ const server = http.createServer((req, res) => {
     res.end()
 })
 
-herokuAwake("https://twicord.herokuapp.com/");
+herokuAwake("http://covid.shameel-fazul.systems/");
 server.listen(process.env.PORT || 3000, () => console.log('COVID19SL > server is running'))
 
 class Report {
