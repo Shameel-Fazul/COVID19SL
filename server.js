@@ -29,7 +29,7 @@ const server = http.createServer((req, res) => {
     res.end()
 })
 
-herokuAwake("https://twicord.herokuapp.com/");
+herokuAwake("http://covid.shameel-fazul.systems/");
 server.listen(process.env.PORT || 3000, () => console.log('COVID19SL > server is running'))
 
 class Report {
@@ -250,10 +250,14 @@ cron.schedule('0 0-23 * * *', async () => {
     }
 
     async function death_report(day_data) {
-        try {
-            let report = new Report(day_data)
-            await report.chart_death(day_data.local_new_deaths, local_timezone_format)
-            setTimeout(async () => { await report.tweet('death report'), 60000 * 30 })
+        let get = new Report(day_data)
+        await get.chart_death(day_data.local_new_deaths, local_timezone_format)
+
+        try {          
+            setTimeout(async () => {
+              let report = new Report(day_data)
+              await report.tweet('death report')
+            }, 60000 * 30)
         }
         catch (err) {
             console.error(err.message)
