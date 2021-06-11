@@ -99,7 +99,7 @@ class Report {
             labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
             datasets: [
             {
-                label: 'COVID CASES IN SRI LANKA THIS WEEK — ' + time,
+                label: 'COVID CASES IN SRI LANKA THIS WEEK — ' + time.toUpperCase(),
                 borderColor: 'rgb(128, 0, 0)',
                 backgroundColor: 'rgba(194, 24, 7, .4)',
                 data: [w_log[0], w_log[1], w_log[2], w_log[3], w_log[4], w_log[5], w_log[6]],
