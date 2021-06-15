@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const cron = require('node-cron');
+const herokuAwake = require("heroku-awake");
 const http = require('http');
 mongoose.set('useFindAndModify', false);
 const fetch = require('node-fetch');
