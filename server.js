@@ -44,33 +44,34 @@ class Report {
     }
     tweet(report_type) {
         if (report_type == 'week report') {
-            let chart = fs.readFileSync('./chart_week.png', { encoding: 'base64' })
+            
+            const week_chart = fs.readFileSync('./chart_week.png', { encoding: 'base64' })
 
-            T.post('media/upload', { media_data: chart }, ({ data }) => {
+            T.post('media/upload', { media_data: week_chart }, (err, data) => {
                 let text = `Coronavirus Cases in Sri Lanka is currently ${this.total_cases}!\n\n→ Active : ${this.active}\n→ Cases Today : ${this.cases_today}\n→ Deaths : ${this.deaths}\n→ Cases Yesterday : ${this.cases_yesterday}\n→ Recovered : ${this.recovered}\n→ Deaths Today : ${this.deaths_today}\n→ Total PCR Tests : ${this.pcr_tests}`;
                 let tweet = {
                     status: text + `\n\n    ~ 🇱🇰  STATUS ID ${Math.floor(Math.random()*1000)} ~\n[#COVID19SL #COVID19LK]`,
                     media_ids: [data.media_id_string]
                 }
-                T.post('statuses/update', tweet, ({ err }) => {
+                T.post('statuses/update', tweet, (err) => {
                     fs.unlinkSync('./chart_week.png')
                     hook.setUsername(`Shameel Server - @COVID19_SL`);
                     hook.setAvatar(process.env.avatar);
-                    hook.send(tweetText)
+                    hook.send(text)
                     if (err) throw Error(err)
                     else return;
                 })
             })
         } 
         else if (report_type == 'death report') {
-            let chart = fs.readFileSync('./chart_death.png', { encoding: 'base64' })
-            T.post('media/upload', { media_data: chart }, ({ data }) => {
+            let death_chart = fs.readFileSync('./chart_death.png', { encoding: 'base64' })
+            T.post('media/upload', { media_data: death_chart }, (err, data) => {
                 let text = `${this.deaths_today} new reported deaths today in Sri Lanka, bringing the total to ${this.deaths} deaths!`;
                 let tweet = {
                     status: text + `\n\n    ~ 🇱🇰  STATUS ID ${Math.floor(Math.random()*1000)} ~\n[#COVID19SL #COVID19LK]`,
                     media_ids: [data.media_id_string]
                 }
-                T.post('statuses/update', tweet, ({ err }) => {
+                T.post('statuses/update', tweet, (err) => {
                     fs.unlinkSync('./chart_death.png')
                     if (err) throw Error(err)
                     else return;
