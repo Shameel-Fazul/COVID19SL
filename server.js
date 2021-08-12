@@ -196,7 +196,7 @@ function vaccination(data) {
     let LKA_vaccinations;
     for (let i = 0; i < data.length; i++) {
         if (data[i].iso_code === "LKA") {
-            LKA_vaccinations = data[i];;
+            LKA_vaccinations = data[i];
         }
     }
     return LKA_vaccinations.data[LKA_vaccinations.data.length - 1];
