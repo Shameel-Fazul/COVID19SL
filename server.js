@@ -10,6 +10,7 @@ const Twit = require('twit');
 const id = process.env.document_id;
 const T = new Twit({ consumer_key: process.env.consumer_key, consumer_secret: process.env.consumer_secret, access_token: process.env.access_token, access_token_secret: process.env.access_token_secret });
 const { findTimeZone, getZonedTime } = require('timezone-support');
+const { converter, SYSTEM } = require("@kushalst/numbers-to-words-converter");
 const moment = require('moment');
 moment.suppressDeprecationWarnings = true;
 const ChartJSImage = require('chart.js-image');
@@ -42,6 +43,11 @@ class Report {
         this.deaths_today = stats.local_new_deaths
         this.cases_yesterday = stats.local_yesterday_cases
         this.pcr_tests = stats.total_pcr_testing_count
+        this.total_vaccinations = stats.total_vaccinations
+        this.people_vaccinated = stats.people_vaccinated
+        this.people_fully_vaccinated = stats.people_fully_vaccinated
+        this.daily_vaccinations = stats.daily_vaccinations
+        this.population = stats.population
     }
     
     tweet(report_type) {
@@ -50,8 +56,10 @@ class Report {
                 console.log('week chart does not exist')
             }
             const week_chart = fs.readFileSync(__dirname + '/chart_week.png', { encoding: 'base64' })
+            const vaccination_chart = fs.readFileSync(__dirname + '/contents/vaccination_chart.jpg', { encoding: 'base64' })
+
             T.post('media/upload', { media_data: week_chart }, (err, data) => {
-                let text = `Coronavirus Cases in Sri Lanka is currently ${this.total_cases}!\n\n→ Active : ${this.active}\n→ Cases Today : ${this.cases_today}\n→ Deaths : ${this.deaths}\n→ Cases Yesterday : ${this.cases_yesterday}\n→ Recovered : ${this.recovered}\n→ Deaths Today : ${this.deaths_today}\n→ Total PCR Tests : ${this.pcr_tests}`;
+                let text = `Coronavirus Cases in Sri Lanka is currently ${this.total_cases}!\n\n– Active : ${this.active}\n– Cases Today : ${this.cases_today}\n– Deaths : ${this.deaths}\n– Cases Yesterday : ${this.cases_yesterday}\n– Recovered : ${this.recovered}\n– Deaths Today : ${this.deaths_today}\n– Total PCR Tests : ${this.pcr_tests}`;
                 let tweet = {
                     status: text + `\n\n    ~ 🇱🇰  STATUS ID ${Math.floor(Math.random()*1000)} ~\n[#COVID19SL #COVID19LK]`,
                     media_ids: [data.media_id_string]
@@ -65,6 +73,20 @@ class Report {
                     else return;
                 })
             })
+
+            setTimeout(() => {
+                T.post('media/upload', { media_data: vaccination_chart }, (err, data) => {
+                    let text = `💉 About ${converter.toWords(this.total_vaccinations, SYSTEM.INTL).split(",")[0]} (${Math.floor(this.total_vaccinations / this.population * 100)}%) Sri Lankans have gotten at least one vaccine dose so far!\n\n– Partial Vaccinated : ${this.people_vaccinated}\n– Fully Vaccinated : ${this.people_fully_vaccinated}\n– Daily Vaccinations : ${this.daily_vaccinations}\n\nGet your shot at https://vaccine.covid19.gov.lk`;
+                    let tweet = {
+                        status: text + `\n\n    ~ 🇱🇰  STATUS ID ${Math.floor(Math.random()*1000)} ~\n[#COVID19SL #COVID19LK]`,
+                        media_ids: [data.media_id_string]
+                    }
+                    T.post('statuses/update', tweet, (err) => {
+                        if (err) throw Error(err)
+                        else return;          
+                    })
+                })
+            }, 60000 * 20);
         } 
         else if (report_type == 'death report') {
             while (!fs.existsSync(__dirname + '/chart_death.png')) {
@@ -170,6 +192,16 @@ class Report {
     }
 }
 
+function vaccination(data) {
+    let LKA_vaccinations;
+    for (let i = 0; i < data.length; i++) {
+        if (data[i].iso_code === "LKA") {
+            LKA_vaccinations = data[i];
+        }
+    }
+    return LKA_vaccinations.data[LKA_vaccinations.data.length - 1];
+}
+
 function formatTime (date, timeZone) {
     const zonedTime = getZonedTime(date, timeZone)
     const { year, month, day, hours, minutes, seconds } = zonedTime
@@ -181,61 +213,62 @@ function displayTime (date, timeZone) {
     return formattedTime;
 }
     
-function displayHour (date, timeZone) {
-    const zonedTime = getZonedTime(date, timeZone)
-    const { hours } = zonedTime
-    return `${hours}`
-}
-
 cron.schedule('0 0-23 * * *', async () => {
     await mongoose.connect(process.env.URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    let api = await fetch('https://www.hpb.health.gov.lk/api/get-current-statistical')
-    let res = await api.json()
-    let data = res.data
+    let infection_api = await fetch('https://www.hpb.health.gov.lk/api/get-current-statistical')
+    let vaccination_api = await fetch('https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.json')
+    let population_api = await fetch("https://restcountries.eu/rest/v2/alpha/lka")
+    let infection_api_res = await infection_api.json()
+    let vaccination_api_res = await vaccination_api.json()
+    let population_api_res = await population_api.json()
+    let infection_data = infection_api_res.data
+    let vaccination_data = vaccination(vaccination_api_res)
+    let population_data = population_api_res.population
     let date = new Date()
     let local_timezone = displayTime(date, findTimeZone('Asia/Colombo'))
     let local_day = moment(local_timezone).format('dddd')
     let local_timezone_format = moment(local_timezone).format('LLLL')
     let death_index = () => logs.findById(id).then(index => index.Deaths_Today)
 
-    local_day != moment(data.update_date_time).format('dddd') ? (data.local_new_cases = 0) : (null)
-    local_day != moment(data.update_date_time).format('dddd') ? (data.local_new_deaths = 0) : (null)
-    data.local_new_deaths != await death_index() ? (death_report(data)) : (null)
+    local_day != moment(infection_data.update_date_time).format('dddd') ? (infection_data.local_new_cases = 0) : (null)
+    local_day != moment(infection_data.update_date_time).format('dddd') ? (infection_data.local_new_deaths = 0) : (null)
+    infection_data.local_new_deaths != await death_index() ? (death_report(data)) : (null)
     
     switch(local_day) {
         case 'Monday':
-            await logs.findByIdAndUpdate({ _id: id }, { Monday: data.local_new_cases.toString() })
-            await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: data.local_new_deaths.toString() })
+            await logs.findByIdAndUpdate({ _id: id }, { Monday: infection_data.local_new_cases.toString() })
+            await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: infection_data.local_new_deaths.toString() })
             break;
         case 'Tuesday':
-            await logs.findByIdAndUpdate({ _id: id }, { Tuesday: data.local_new_cases.toString() })
-            await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: data.local_new_deaths.toString() })
+            await logs.findByIdAndUpdate({ _id: id }, { Tuesday: infection_data.local_new_cases.toString() })
+            await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: infection_data.local_new_deaths.toString() })
             break;
         case 'Wednesday':
-            await logs.findByIdAndUpdate({ _id: id }, { Wednesday: data.local_new_cases.toString() })
-            await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: data.local_new_deaths.toString() })
+            await logs.findByIdAndUpdate({ _id: id }, { Wednesday: infection_data.local_new_cases.toString() })
+            await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: infection_data.local_new_deaths.toString() })
             break;
         case 'Thursday':
-            await logs.findByIdAndUpdate({ _id: id }, { Thursday: data.local_new_cases.toString() })
-            await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: data.local_new_deaths.toString() })
+            await logs.findByIdAndUpdate({ _id: id }, { Thursday: infection_data.local_new_cases.toString() })
+            await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: infection_data.local_new_deaths.toString() })
             break;
         case 'Friday':
-            await logs.findByIdAndUpdate({ _id: id }, { Friday: data.local_new_cases.toString() })
-            await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: data.local_new_deaths.toString() })
+            await logs.findByIdAndUpdate({ _id: id }, { Friday: infection_data.local_new_cases.toString() })
+            await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: infection_data.local_new_deaths.toString() })
             break;
         case 'Saturday':
-            await logs.findByIdAndUpdate({ _id: id }, { Saturday: data.local_new_cases.toString() })
-            await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: data.local_new_deaths.toString() })
+            await logs.findByIdAndUpdate({ _id: id }, { Saturday: infection_data.local_new_cases.toString() })
+            await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: infection_data.local_new_deaths.toString() })
             break;
         case 'Sunday':
-            await logs.findByIdAndUpdate({ _id: id }, { Sunday: data.local_new_cases.toString() })
-            await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: data.local_new_deaths.toString() })
+            await logs.findByIdAndUpdate({ _id: id }, { Sunday: infection_data.local_new_cases.toString() })
+            await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: infection_data.local_new_deaths.toString() })
             break;
         default:
             break;
     }
+
     let week_data = await logs.findById(id)
-    let day_data = Object.assign(data, { local_yesterday_cases: parseInt(week_data.Yesterday) })
+    let day_data = Object.assign(infection_data, { local_yesterday_cases: parseInt(week_data.Yesterday), population: population_data, total_vaccinations: vaccination_data.total_vaccinations, people_vaccinated: vaccination_data.people_vaccinated, people_fully_vaccinated: vaccination_data.people_fully_vaccinated, daily_vaccinations: vaccination_data.daily_vaccinations})
     let get = new Report(day_data)
 
     try {
