@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/Shameel-Fazul/COVID19SL#readme",
   "dependencies": {
+    "@kushalst/numbers-to-words-converter": "^1.1.1",
     "chart.js": "^2.9.3",
     "chart.js-image": "^5.6.0",
     "chartjs-node-canvas": "^3.0.6",
