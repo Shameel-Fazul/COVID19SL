@@ -48,7 +48,6 @@ class Report {
         this.people_fully_vaccinated = stats.people_fully_vaccinated
         this.daily_vaccinations = stats.daily_vaccinations
         this.population = stats.population
-        //this.vaccinated_percentage = 
     }
     
     tweet(report_type) {
@@ -60,16 +59,16 @@ class Report {
             const vaccination_chart = fs.readFileSync(__dirname + '/contents/vaccination_chart.jpg', { encoding: 'base64' })
 
             T.post('media/upload', { media_data: week_chart }, (err, data) => {
-                let infection_text = `Coronavirus Cases in Sri Lanka is currently ${this.total_cases}!\n\n→ Active : ${this.active}\n→ Cases Today : ${this.cases_today}\n→ Deaths : ${this.deaths}\n→ Cases Yesterday : ${this.cases_yesterday}\n→ Recovered : ${this.recovered}\n→ Deaths Today : ${this.deaths_today}\n→ Total PCR Tests : ${this.pcr_tests}`;
-                let infection_tweet = {
-                    status: infection_text + `\n\n    ~ 🇱🇰  STATUS ID ${Math.floor(Math.random()*1000)} ~\n[#COVID19SL #COVID19LK]`,
+                let text = `Coronavirus Cases in Sri Lanka is currently ${this.total_cases}!\n\n– Active : ${this.active}\n– Cases Today : ${this.cases_today}\n– Deaths : ${this.deaths}\n– Cases Yesterday : ${this.cases_yesterday}\n– Recovered : ${this.recovered}\n– Deaths Today : ${this.deaths_today}\n– Total PCR Tests : ${this.pcr_tests}`;
+                let tweet = {
+                    status: text + `\n\n    ~ 🇱🇰  STATUS ID ${Math.floor(Math.random()*1000)} ~\n[#COVID19SL #COVID19LK]`,
                     media_ids: [data.media_id_string]
                 }
-                T.post('statuses/update', infection_tweet, (err) => {
+                T.post('statuses/update', tweet, (err) => {
                     fs.unlinkSync(__dirname + '/chart_week.png')
                     hook.setUsername(`Shameel Server - @COVID19_SL`);
                     hook.setAvatar(process.env.avatar);
-                    hook.send(infection_text)
+                    hook.send(text)
                     if (err) throw Error(err)
                     else return;
                 })
@@ -77,12 +76,12 @@ class Report {
 
             setTimeout(() => {
                 T.post('media/upload', { media_data: vaccination_chart }, (err, data) => {
-                    let vaccination_text = `💉 About ${converter.toWords(this.total_vaccinations, SYSTEM.INTL).split(",")[0]} (${Math.floor(this.total_vaccinations / this.population * 100)}%) Sri Lankans have gotten at least one vaccine dose so far!\n\n– Partial Vaccinated : ${this.people_vaccinated}\n– Fully Vaccinated : ${this.people_fully_vaccinated}\n– Daily Vaccinations : ${this.daily_vaccinations}\n\nGet your shot at https://vaccine.covid19.gov.lk`;
-                    let vaccination_tweet = {
-                        status: vaccination_text + `\n\n    ~ 🇱🇰  STATUS ID ${Math.floor(Math.random()*1000)} ~\n[#COVID19SL #COVID19LK]`,
+                    let text = `💉 About ${converter.toWords(this.total_vaccinations, SYSTEM.INTL).split(",")[0]} (${Math.floor(this.total_vaccinations / this.population * 100)}%) Sri Lankans have gotten at least one vaccine dose so far!\n\n– Partial Vaccinated : ${this.people_vaccinated}\n– Fully Vaccinated : ${this.people_fully_vaccinated}\n– Daily Vaccinations : ${this.daily_vaccinations}\n\nGet your shot at https://vaccine.covid19.gov.lk`;
+                    let tweet = {
+                        status: text + `\n\n    ~ 🇱🇰  STATUS ID ${Math.floor(Math.random()*1000)} ~\n[#COVID19SL #COVID19LK]`,
                         media_ids: [data.media_id_string]
                     }
-                    T.post('statuses/update', vaccination_tweet, (err) => {
+                    T.post('statuses/update', tweet, (err) => {
                         if (err) throw Error(err)
                         else return;          
                     })
@@ -214,13 +213,7 @@ function displayTime (date, timeZone) {
     return formattedTime;
 }
     
-function displayHour (date, timeZone) {
-    const zonedTime = getZonedTime(date, timeZone)
-    const { hours } = zonedTime
-    return `${hours}`
-}
-
-cron.schedule('39 0-23 * * *', async () => {
+cron.schedule('0 0-23 * * *', async () => {
     await mongoose.connect(process.env.URI, { useNewUrlParser: true, useUnifiedTopology: true })
     let infection_api = await fetch('https://www.hpb.health.gov.lk/api/get-current-statistical')
     let vaccination_api = await fetch('https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.json')
