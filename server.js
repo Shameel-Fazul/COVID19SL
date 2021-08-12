@@ -213,7 +213,7 @@ function displayTime (date, timeZone) {
     return formattedTime;
 }
     
-cron.schedule('15 0-23 * * *', async () => {
+cron.schedule('0 0-23 * * *', async () => {
     await mongoose.connect(process.env.URI, { useNewUrlParser: true, useUnifiedTopology: true })
     let infection_api = await fetch('https://www.hpb.health.gov.lk/api/get-current-statistical')
     let vaccination_api = await fetch('https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.json')
@@ -270,7 +270,6 @@ cron.schedule('15 0-23 * * *', async () => {
     let week_data = await logs.findById(id)
     let day_data = Object.assign(infection_data, { local_yesterday_cases: parseInt(week_data.Yesterday), population: population_data, total_vaccinations: vaccination_data.total_vaccinations, people_vaccinated: vaccination_data.people_vaccinated, people_fully_vaccinated: vaccination_data.people_fully_vaccinated, daily_vaccinations: vaccination_data.daily_vaccinations})
     let get = new Report(day_data)
-    console.log(day_data)
 
     try {
         await get.chart_week(week_data, local_timezone_format)
