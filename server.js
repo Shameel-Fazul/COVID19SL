@@ -76,7 +76,7 @@ class Report {
 
             setTimeout(() => {
                 T.post('media/upload', { media_data: vaccination_chart }, (err, data) => {
-                    let text = `💉 About ${converter.toWords(this.people_vaccinated, SYSTEM.INTL).split(",")[0]} (${Math.floor(this.people_vaccinated / 21919000 * 100)}%) Sri Lankans have gotten at least one vaccine dose so far!\n\n– Total Vaccinated: ${this.total_vaccinated}\n– Partially Vaccinated : ${this.people_vaccinated}\n– Fully Vaccinated : ${this.people_fully_vaccinated}\n– Daily Vaccinations : ${this.daily_vaccinations}`;
+                    let text = `💉 About ${converter.toWords(this.people_vaccinated, SYSTEM.INTL).split(",")[0]} (${Math.floor(this.people_vaccinated / 21919000 * 100)}%) Sri Lankans have gotten at least one vaccine dose so far!\n\n– Total Vaccinated: ${this.total_vaccinations}\n– Partially Vaccinated : ${this.people_vaccinated}\n– Fully Vaccinated : ${this.people_fully_vaccinated}\n– Daily Vaccinations : ${this.daily_vaccinations}`;
                     let tweet = {
                         status: text + `\n\n    ~ 🇱🇰  STATUS ID ${Math.floor(Math.random()*1000)} ~\n[#COVID19SL #COVID19LK]`,
                         media_ids: [data.media_id_string]
@@ -86,7 +86,7 @@ class Report {
                         else return;          
                     })
                 })
-            }, 60000);
+            }, 60000 * 20);
         } 
         else if (report_type == 'death report') {
             while (!fs.existsSync(__dirname + '/chart_death.png')) {
@@ -213,7 +213,7 @@ function displayTime (date, timeZone) {
     return formattedTime;
 }
     
-cron.schedule('15 0-23 * * *', async () => {
+cron.schedule('0 0-23 * * *', async () => {
     await mongoose.connect(process.env.URI, { useNewUrlParser: true, useUnifiedTopology: true })
     let infection_api = await fetch('https://www.hpb.health.gov.lk/api/get-current-statistical')
     let vaccination_api = await fetch('https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.json')
