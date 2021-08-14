@@ -68,7 +68,7 @@ class Report {
                     fs.unlinkSync(__dirname + '/chart_week.png')
                     hook.setUsername(`Shameel Server - @COVID19_SL`);
                     hook.setAvatar(process.env.avatar);
-                    hook.send(text)
+                    hook.send(text + `\n– Vaccinated : Math.floor(this.people_vaccinated / 21919000 * 100)%`)
                     if (err) throw Error(err)
                     else return;
                 })
