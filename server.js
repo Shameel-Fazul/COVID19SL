@@ -51,6 +51,16 @@ class Report {
     }
     
     tweet(report_type) {
+        let f_total_vaccinations = this.total_vaccinations.split("")
+        let f_people_vaccinated = this.people_vaccinated.split("")
+        let f_people_fully_vaccinated = this.people_fully_vaccinated.split("")
+        let f_daily_vaccinations = this.daily_vaccinations.split("")
+        let o_total_vaccinations = f_total_vaccinations[0]+f_total_vaccinations[1]+","+f_total_vaccinations[2]+f_total_vaccinations[3]+[f_total_vaccinations[4]+","+f_total_vaccinations[5]+f_total_vaccinations[6]+f_total_vaccinations[7];
+        let o_people_vaccinated = f_people_vaccinated[0]+f_people_vaccinated[1]+","+f_people_vaccinated[2]+f_people_vaccinated[3]+f_people_vaccinated[4]+","+f_people_vaccinated[5]+f_people_vaccinated[6]+f_people_vaccinated[7];
+        let o_people_fully_vaccinated = f_people_fully_vaccinated[0]+","+f_people_fully_vaccinated[1]+f_people_fully_vaccinated[2]+f_people_fully_vaccinated[3]+","+f_people_fully_vaccinated[4]+f_people_fully_vaccinated[5]+f_people_fully_vaccinated[6];
+        let o_daily_vaccinations = f_daily_vaccinations[0]+f_daily_vaccinations[1]+f_daily_vaccinations[2]+","+f_daily_vaccinations[3]+f_daily_vaccinations[4]+f_daily_vaccinations[5];
+        let testtext = `${o_total_vaccinations}\n${o_people_vaccinated}\n${o_people_fully_vaccinated}\n${o_daily_vaccinations}`;
+
         if (report_type == 'week report') {
             while (!fs.existsSync(__dirname + '/chart_week.png')) {
                 console.log('week chart does not exist')
@@ -68,7 +78,7 @@ class Report {
                     fs.unlinkSync(__dirname + '/chart_week.png')
                     hook.setUsername(`Shameel Server - @COVID19_SL`);
                     hook.setAvatar(process.env.avatar);
-                    hook.send(text + `\n– Vaccinated : ${Math.floor(this.people_vaccinated / 21919000 * 100)}%`)
+                    hook.send(text + `\n– Vaccinated : ${Math.floor(this.people_vaccinated / 21919000 * 100)}%` + testtext)
                     if (err) throw Error(err)
                     else return;
                 })
