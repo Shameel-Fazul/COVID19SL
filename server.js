@@ -50,17 +50,7 @@ class Report {
         this.population = stats.population
     }
     
-    tweet(report_type) {
-        let f_total_vaccinations = this.total_vaccinations.split("")
-        let f_people_vaccinated = this.people_vaccinated.split("")
-        let f_people_fully_vaccinated = this.people_fully_vaccinated.split("")
-        let f_daily_vaccinations = this.daily_vaccinations.split("")
-        let o_total_vaccinations = f_total_vaccinations[0]+f_total_vaccinations[1]+","+f_total_vaccinations[2]+f_total_vaccinations[3]+[f_total_vaccinations[4]+","+f_total_vaccinations[5]+f_total_vaccinations[6]+f_total_vaccinations[7];
-        let o_people_vaccinated = f_people_vaccinated[0]+f_people_vaccinated[1]+","+f_people_vaccinated[2]+f_people_vaccinated[3]+f_people_vaccinated[4]+","+f_people_vaccinated[5]+f_people_vaccinated[6]+f_people_vaccinated[7];
-        let o_people_fully_vaccinated = f_people_fully_vaccinated[0]+","+f_people_fully_vaccinated[1]+f_people_fully_vaccinated[2]+f_people_fully_vaccinated[3]+","+f_people_fully_vaccinated[4]+f_people_fully_vaccinated[5]+f_people_fully_vaccinated[6];
-        let o_daily_vaccinations = f_daily_vaccinations[0]+f_daily_vaccinations[1]+f_daily_vaccinations[2]+","+f_daily_vaccinations[3]+f_daily_vaccinations[4]+f_daily_vaccinations[5];
-        let testtext = `${o_total_vaccinations}\n${o_people_vaccinated}\n${o_people_fully_vaccinated}\n${o_daily_vaccinations}`;
-
+    tweet(report_type) {                                     
         if (report_type == 'week report') {
             while (!fs.existsSync(__dirname + '/chart_week.png')) {
                 console.log('week chart does not exist')
@@ -69,7 +59,7 @@ class Report {
             const vaccination_chart = fs.readFileSync(__dirname + '/contents/vaccination_chart.jpg', { encoding: 'base64' })
 
             T.post('media/upload', { media_data: week_chart }, (err, data) => {
-                let text = `Coronavirus Cases in Sri Lanka is currently ${this.total_cases}!\n\n– Active : ${this.active}\n– Cases Today : ${this.cases_today}\n– Deaths : ${this.deaths}\n– Cases Yesterday : ${this.cases_yesterday}\n– Recovered : ${this.recovered}\n– Deaths Today : ${this.deaths_today}\n– Total PCR Tests : ${this.pcr_tests}`;
+                let text = `Coronavirus Cases in Sri Lanka is currently ${Number(this.total_cases).toLocaleString()}!\n\n– Active : ${Number(this.active).toLocaleString()}\n– Cases Today : ${Number(this.cases_today).toLocaleString()}\n– Deaths : ${Number(this.deaths).toLocaleString()}\n– Cases Yesterday : ${Number(this.cases_yesterday).toLocaleString()}\n– Recovered : ${Number(this.recovered).toLocaleString()}\n– Deaths Today : ${Number(this.deaths_today).toLocaleString()}\n– Total PCR Tests : ${Number(this.pcr_tests).toLocaleString()}`;
                 let tweet = {
                     status: text + `\n\n    ~ 🇱🇰  STATUS ID ${Math.floor(Math.random()*1000)} ~\n[#COVID19SL #COVID19LK]`,
                     media_ids: [data.media_id_string]
@@ -78,7 +68,7 @@ class Report {
                     fs.unlinkSync(__dirname + '/chart_week.png')
                     hook.setUsername(`Shameel Server - @COVID19_SL`);
                     hook.setAvatar(process.env.avatar);
-                    hook.send(text + `\n– Vaccinated : ${Math.floor(this.people_vaccinated / 21919000 * 100)}%` + testtext)
+                    hook.send(text + `\n– Vaccinated : ${this.people_vaccinated / 21919000 * 100}%`)
                     if (err) throw Error(err)
                     else return;
                 })
@@ -86,7 +76,7 @@ class Report {
 
             setTimeout(() => {
                 T.post('media/upload', { media_data: vaccination_chart }, (err, data) => {
-                    let text = `💉 About ${converter.toWords(this.people_vaccinated, SYSTEM.INTL).split(",")[0]} (${Math.floor(this.people_vaccinated / 21919000 * 100)}%) Sri Lankans have gotten at least one vaccine dose so far!\n\n– Total Vaccinated: ${this.total_vaccinations}\n– Partially Vaccinated : ${this.people_vaccinated}\n– Fully Vaccinated : ${this.people_fully_vaccinated}\n– Daily Vaccinations : ${this.daily_vaccinations}`;
+                    let text = `💉 About ${converter.toWords(this.people_vaccinated, SYSTEM.INTL).split(",")[0]} (${Math.floor(this.people_vaccinated / 21919000 * 100)}%) Sri Lankans have gotten at least one vaccine dose so far!\n\n– Total Vaccinated: ${Number(this.total_vaccinations).toLocaleString()}\n– Partially Vaccinated : ${Number(this.people_vaccinated).toLocaleString()}\n– Fully Vaccinated : ${Number(this.people_fully_vaccinated).toLocaleString()}\n– Daily Vaccinations : ${Number(this.daily_vaccinations).toLocaleString()}`;
                     let tweet = {
                         status: text + `\n\n    ~ 🇱🇰  STATUS ID ${Math.floor(Math.random()*1000)} ~\n[#COVID19SL #COVID19LK]`,
                         media_ids: [data.media_id_string]
@@ -104,7 +94,7 @@ class Report {
             }
             let death_chart = fs.readFileSync(__dirname + '/chart_death.png', { encoding: 'base64' })
             T.post('media/upload', { media_data: death_chart }, (err, data) => {
-                let text = `${this.deaths_today} new reported deaths today in Sri Lanka, bringing the total to ${this.deaths} deaths!`;
+                let text = `${Number(this.deaths_today).toLocaleString()} new reported deaths today in Sri Lanka, bringing the total to ${Number(this.deaths).toLocaleString()} deaths!`;
                 let tweet = {
                     status: text + `\n\n    ~ 🇱🇰  STATUS ID ${Math.floor(Math.random()*1000)} ~\n[#COVID19SL #COVID19LK]`,
                     media_ids: [data.media_id_string]
