@@ -56,7 +56,7 @@ class Report {
                 console.log('week chart does not exist')
             }
             const week_chart = fs.readFileSync(__dirname + '/chart_week.png', { encoding: 'base64' })
-            const vaccination_chart = fs.readFileSync(__dirname + '/contents/vaccination_chart.jpg', { encoding: 'base64' })
+            const vaccination_chart = fs.readFileSync(__dirname + '/contents/vaccination_report_thumbnail.jpg', { encoding: 'base64' })
 
             T.post('media/upload', { media_data: week_chart }, (err, data) => {
                 let text = `Coronavirus Cases in Sri Lanka is currently ${Number(this.total_cases).toLocaleString()}!\n\n– Active : ${Number(this.active).toLocaleString()}\n– Cases Today : ${Number(this.cases_today).toLocaleString()}\n– Deaths : ${Number(this.deaths).toLocaleString()}\n– Cases Yesterday : ${Number(this.cases_yesterday).toLocaleString()}\n– Recovered : ${Number(this.recovered).toLocaleString()}\n– Deaths Today : ${Number(this.deaths_today).toLocaleString()}\n– Total PCR Tests : ${Number(this.pcr_tests).toLocaleString()}`;
