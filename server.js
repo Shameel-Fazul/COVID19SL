@@ -76,7 +76,7 @@ class Report {
 
             setTimeout(() => {
                 T.post('media/upload', { media_data: vaccination_chart }, (err, data) => {
-                    let text = `💉 About ${converter.toWords(this.people_vaccinated, SYSTEM.INTL).split(",")[0]} (${Math.floor(this.people_vaccinated / 21919000 * 100)}%) Sri Lankans have gotten at least one vaccine dose so far!\n\n– Total Vaccinated: ${Number(this.total_vaccinations).toLocaleString()}\n– Partially Vaccinated : ${Number(this.people_vaccinated).toLocaleString()}\n– Fully Vaccinated : ${Number(this.people_fully_vaccinated).toLocaleString()}\n– Daily Vaccinations : ${Number(this.daily_vaccinations).toLocaleString()}`;
+                    let text = `💉 About ${converter.toWords(this.people_vaccinated, SYSTEM.INTL).split(",")[0]} (${Math.floor(this.people_vaccinated / 21919000 * 100)}%) Sri Lankans have gotten at least one vaccine dose so far!\n\n– Total Vaccinated: ${Number(this.total_vaccinations).toLocaleString()}\n– Fully Vaccinated : ${Number(this.people_fully_vaccinated).toLocaleString()}\n– Daily Vaccinations : ${Number(this.daily_vaccinations).toLocaleString()}`;
                     let tweet = {
                         status: text + `\n\n    ~ 🇱🇰  STATUS ID ${Math.floor(Math.random()*1000)} ~\n[#COVID19SL #COVID19LK]`,
                         media_ids: [data.media_id_string]
