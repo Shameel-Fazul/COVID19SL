@@ -36,4 +36,3 @@ jobs:
         URI: ${{ secrets.URI }}
          
     - run: npm install
-    - run: node server.js
