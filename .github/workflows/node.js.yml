@@ -1,0 +1,39 @@
+# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js Production Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - env:
+        access_token: ${{ secrets.ACCESS_TOKEN }}
+        access_token_secret: ${{ secrets.ACCESS_TOKEN_SECRET }}
+        avatar: ${{ secrets.AVATAR }}
+        consumer_key: ${{ secrets.CONSUMER_KEY }}
+        consumer_secret: ${{ secrets.CONSUMER_SECRET }}
+        discord_webhook: ${{ secrets.DISCORD_WEBHOOK }}
+        document_id: ${{ secrets.DOCUMENT_ID }}
+        URI: ${{ secrets.URI }}
+         
+    - run: npm install
+    - run: node server.js
