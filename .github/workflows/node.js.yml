@@ -22,6 +22,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
+      env:
+        access_token: ${{ secrets.ACCESS_TOKEN }}
+        access_token_secret: ${{ secrets.ACCESS_TOKEN_SECRET }}
+        consumer_key: ${{ secrets.CONSUMER_KEY }}
+        consumer_secret: ${{ secrets.CONSUMER_SECRET }}
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
