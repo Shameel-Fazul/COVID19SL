@@ -20,7 +20,7 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v2
+    - shell: cmd
     - name: Use Node.js ${{ matrix.node-version }}
       env:
         access_token: ${{ secrets.ACCESS_TOKEN }}
