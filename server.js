@@ -224,16 +224,16 @@ cron.schedule('0 0-23 * * *', async () => {
     let infection_data = infection_api_res.data
     let vaccination_data = vaccination(vaccination_api_res)
     let population_data = population_api_res.population
-    let db = await logs.findById(id)
     let date = new Date()
     let local_timezone = displayTime(date, findTimeZone('Asia/Colombo'))
     let local_day = moment(local_timezone).format('dddd')
     let local_timezone_format = moment(local_timezone).format('LLLL')
+    let yesterday_index = () => logs.findById(id).then(index => index.Yesterday)
     let death_index = () => logs.findById(id).then(index => index.Deaths_Today)
 
     local_day != moment(infection_data.update_date_time).format('dddd') ? (infection_data.local_new_cases = 0) : (null)
     local_day != moment(infection_data.update_date_time).format('dddd') ? (infection_data.local_new_deaths = 0) : (null)
-    infection_data.local_new_cases == db.Yesterday ? (infection_data.local_new_cases = 0) : (null)
+    infection_data.local_new_cases == await yesterday_index ? (infection_data.local_new_cases = 0) : (null)
     infection_data.local_new_deaths != await death_index() ? (death_report(infection_data)) : (null)
     
     switch(local_day) {
