@@ -234,6 +234,7 @@ cron.schedule('0 0-23 * * *', async () => {
     local_day != moment(infection_data.update_date_time).format('dddd') ? (infection_data.local_new_cases = 0) : (null)
     local_day != moment(infection_data.update_date_time).format('dddd') ? (infection_data.local_new_deaths = 0) : (null)
     infection_data.local_new_cases == await yesterday_index() ? (infection_data.local_new_cases = 0) : (null)
+    infection_data.local_new_deaths == await death_index() ? (infection_data.local_new_deaths = 0) : (null)
     infection_data.local_new_deaths != await death_index() ? (death_report(infection_data)) : (null)
     
     switch(local_day) {
