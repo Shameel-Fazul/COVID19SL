@@ -38,6 +38,10 @@ const WeekLogsSchema = new Schema({
     Deaths_Today: {
         type: String,
         required: true
+    },
+    Deaths_Yesterday: {
+        type: String,
+        required: true
     }
 });
 
