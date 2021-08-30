@@ -307,9 +307,8 @@ cron.schedule('57 23 * * *', async () => {
     await mongoose.connect(process.env.URI, { useNewUrlParser: true, useUnifiedTopology: true })
     try {
         let api = await fetch('https://www.hpb.health.gov.lk/api/get-current-statistical')
-        let cases_today = await api.json().then((res) => res.data.local_new_cases)
-        let deaths_today = await api.json().then((res) => res.data.local_new_deaths)
-        await logs.updateMany({ Yesterday: cases_today.toString(), Deaths_Today: "0", Deaths_Yesterday: deaths_today.toString() })
+        let index = await api.json()
+        await logs.updateMany({ Yesterday: index.data.local_new_cases.toString(), Deaths_Today: "0", Deaths_Yesterday: index.data.local_new_deaths.toString() })
     }
     catch (err) {
         console.error(err.message)
