@@ -228,13 +228,13 @@ cron.schedule('0 0-23 * * *', async () => {
     let local_timezone = displayTime(date, findTimeZone('Asia/Colombo'))
     let local_day = moment(local_timezone).format('dddd')
     let local_timezone_format = moment(local_timezone).format('LLLL')
-    let yesterday_index = () => logs.findById(id).then(index => index.Yesterday)
-    let death_index = () => logs.findById(id).then(index => index.Deaths_Today)
+    let index = () => logs.findById(id)
 
     local_day != moment(infection_data.update_date_time).format('dddd') ? (infection_data.local_new_cases = 0) : (null)
     local_day != moment(infection_data.update_date_time).format('dddd') ? (infection_data.local_new_deaths = 0) : (null)
-    infection_data.local_new_cases == await yesterday_index() ? (infection_data.local_new_cases = 0) : (null)
-    infection_data.local_new_deaths != await death_index() ? (death_report(infection_data)) : (null)
+    infection_data.local_new_cases == index.Yesterday ? (infection_data.local_new_cases = 0) : (null)
+    infection_data.local_new_deaths == index.Deaths_Yesterday ? (infection_data.local_new_deaths = 0) : (null)
+    infection_data.local_new_deaths != index.Deaths_Today ? (death_report(infection_data)) : (null)
     
     switch(local_day) {
         case 'Monday':
