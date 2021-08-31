@@ -228,7 +228,7 @@ cron.schedule('0 0-23 * * *', async () => {
     let local_timezone = displayTime(date, findTimeZone('Asia/Colombo'))
     let local_day = moment(local_timezone).format('dddd')
     let local_timezone_format = moment(local_timezone).format('LLLL')
-    let index = () => logs.findById(id)
+    let index = async () => await logs.findById(id)
 
     local_day != moment(infection_data.update_date_time).format('dddd') ? (infection_data.local_new_cases = 0) : (null)
     local_day != moment(infection_data.update_date_time).format('dddd') ? (infection_data.local_new_deaths = 0) : (null)
