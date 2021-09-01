@@ -240,32 +240,25 @@ cron.schedule('0 0-23 * * *', async () => {
     
     switch(local_day) {
         case 'Monday':
-            await logs.findByIdAndUpdate({ _id: id }, { Monday: infection_data.local_new_cases.toString() })
-            await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: infection_data.local_new_deaths.toString() })
+            await logs.updateMany({ Monday: infection_data.local_new_cases.toString(), Deaths_Today: infection_data.local_new_deaths.toString() })
             break;
         case 'Tuesday':
-            await logs.findByIdAndUpdate({ _id: id }, { Tuesday: infection_data.local_new_cases.toString() })
-            await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: infection_data.local_new_deaths.toString() })
+            await logs.updateMany({ Tuesday: infection_data.local_new_cases.toString(), Deaths_Today: infection_data.local_new_deaths.toString() })
             break;
         case 'Wednesday':
-            await logs.findByIdAndUpdate({ _id: id }, { Wednesday: infection_data.local_new_cases.toString() })
-            await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: infection_data.local_new_deaths.toString() })
+            await logs.updateMany({ Wednesday: infection_data.local_new_cases.toString(), Deaths_Today: infection_data.local_new_deaths.toString() })
             break;
         case 'Thursday':
-            await logs.findByIdAndUpdate({ _id: id }, { Thursday: infection_data.local_new_cases.toString() })
-            await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: infection_data.local_new_deaths.toString() })
+            await logs.updateMany({ Thursday: infection_data.local_new_cases.toString(), Deaths_Today: infection_data.local_new_deaths.toString() })
             break;
         case 'Friday':
-            await logs.findByIdAndUpdate({ _id: id }, { Friday: infection_data.local_new_cases.toString() })
-            await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: infection_data.local_new_deaths.toString() })
+            await logs.updateMany({ Friday: infection_data.local_new_cases.toString(), Deaths_Today: infection_data.local_new_deaths.toString() })
             break;
         case 'Saturday':
-            await logs.findByIdAndUpdate({ _id: id }, { Saturday: infection_data.local_new_cases.toString() })
-            await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: infection_data.local_new_deaths.toString() })
+            await logs.updateMany({ Saturday: infection_data.local_new_cases.toString(), Deaths_Today: infection_data.local_new_deaths.toString() })
             break;
         case 'Sunday':
-            await logs.findByIdAndUpdate({ _id: id }, { Sunday: infection_data.local_new_cases.toString() })
-            await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: infection_data.local_new_deaths.toString() })
+            await logs.updateMany({ Sunday: infection_data.local_new_cases.toString(), Deaths_Today: infection_data.local_new_deaths.toString() })
             break;
         default:
             break;
