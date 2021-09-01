@@ -235,7 +235,6 @@ cron.schedule('0 0-23 * * *', async () => {
     local_day != moment(infection_data.update_date_time).format('dddd') ? (infection_data.local_new_deaths = 0) : (null)
     infection_data.local_new_cases == index.Yesterday ? (infection_data.local_new_cases = 0) : (null)
     infection_data.local_new_deaths == index.Deaths_Yesterday ? (infection_data.local_new_deaths = 0) : (null)
-    //infection_data.local_new_deaths == index.Deaths_Yesterday ? (await logs.findByIdAndUpdate({ _id: id }, { Deaths_Today: "0" })) : (null)
     (infection_data.local_new_deaths > 0 && infection_data.local_new_deaths != index.Deaths_Today)  ? (death_report(infection_data)) : (null)
     
     switch(local_day) {
