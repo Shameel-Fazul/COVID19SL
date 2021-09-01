@@ -235,8 +235,12 @@ cron.schedule('0 0-23 * * *', async () => {
     local_day != moment(infection_data.update_date_time).format('dddd') ? (infection_data.local_new_deaths = 0) : (null)
     infection_data.local_new_cases == index.Yesterday ? (infection_data.local_new_cases = 0) : (null)
     infection_data.local_new_deaths == index.Deaths_Yesterday ? (infection_data.local_new_deaths = 0) : (null)
-    (infection_data.local_new_deaths > 0 && infection_data.local_new_deaths != index.Deaths_Today)  ? (death_report(infection_data)) : (null)
+    //(infection_data.local_new_deaths > 0 && infection_data.local_new_deaths != index.Deaths_Today)  ? (death_report(infection_data)) : (null)
     
+    if (infection_data.local_new_deaths > 0 && infection_data.local_new_deaths != index.Deaths_Today) {
+        death_report(infection_data)
+    }
+
     switch(local_day) {
         case 'Monday':
             await logs.updateMany({ Monday: infection_data.local_new_cases.toString(), Deaths_Today: infection_data.local_new_deaths.toString() })
