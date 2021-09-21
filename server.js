@@ -23,9 +23,9 @@ const server = http.createServer((req, res) => {
     if (req.method == 'GET' && req.url === '/') {
         res.writeHead(200, {"Content-Type": "application/json"})
         res.write(JSON.stringify({ COVID19SL: 'server is running'}))
-    } else if (req.method == 'POST' && req.url == '/') {
-        res.writeHead(200, {"Content-Type": "application/json"})
-        res.write(JSON.stringify({ COVID19SL: 'panel is inactive'}))
+    } else {
+        res.writeHead(401, {"Content-Type": "application/json"})
+        res.write(JSON.stringify({ COVID19SL: 'Unauthorized'}))
     }
     res.end()
 })
@@ -59,7 +59,7 @@ class Report {
             const vaccination_chart = fs.readFileSync(__dirname + '/contents/vaccination_report_thumbnail.jpg', { encoding: 'base64' })
 
             T.post('media/upload', { media_data: week_chart }, (err, data) => {
-                let text = `Coronavirus Cases in Sri Lanka is currently ${Number(this.total_cases).toLocaleString()}!\n\n– Active : ${Number(this.active).toLocaleString()}\n– Cases Today : ${Number(this.cases_today).toLocaleString()}\n– Deaths : ${Number(this.deaths).toLocaleString()}\n– Cases Yesterday : ${Number(this.cases_yesterday).toLocaleString()}\n– Recovered : ${Number(this.recovered).toLocaleString()}\n– Deaths Today : ${Number(this.deaths_today).toLocaleString()}\n– Total PCR Tests : ${Number(this.pcr_tests).toLocaleString()}`;
+                let text = `Coronavirus cases in Sri Lanka is currently ${Number(this.total_cases).toLocaleString()}!\n\n– Active : ${Number(this.active).toLocaleString()}\n– Cases Today : ${Number(this.cases_today).toLocaleString()}\n– Deaths : ${Number(this.deaths).toLocaleString()}\n– Cases Yesterday : ${Number(this.cases_yesterday).toLocaleString()}\n– Recovered : ${Number(this.recovered).toLocaleString()}\n– Deaths Today : ${Number(this.deaths_today).toLocaleString()}\n– Total PCR Tests : ${Number(this.pcr_tests).toLocaleString()}`;
                 let tweet = {
                     status: text + `\n\n    ~ 🇱🇰  STATUS ID ${Math.floor(Math.random()*1000)} ~\n[#COVID19SL #COVID19LK]`,
                     media_ids: [data.media_id_string]
