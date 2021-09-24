@@ -22,9 +22,11 @@
   "homepage": "https://github.com/Shameel-Fazul/COVID19SL#readme",
   "dependencies": {
     "@kushalst/numbers-to-words-converter": "^1.1.1",
+    "axios": "^0.21.4",
     "chart.js": "^2.9.3",
     "chart.js-image": "^5.6.0",
     "chartjs-node-canvas": "^3.0.6",
+    "cheerio": "*",
     "discord-webhook-node": "^1.1.8",
     "dotenv": "^9.0.2",
     "heroku-awake": "^1.0.10",

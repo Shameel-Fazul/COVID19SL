@@ -4,6 +4,8 @@ const herokuAwake = require("heroku-awake");
 const http = require('http');
 mongoose.set('useFindAndModify', false);
 const fetch = require('node-fetch');
+const cheerio = require('cheerio');
+const axios  = require("axios");
 const fs = require('fs');
 require('dotenv').config()
 const Twit = require('twit');
@@ -68,7 +70,7 @@ class Report {
                     fs.unlinkSync(__dirname + '/chart_week.png')
                     hook.setUsername(`Shameel Server - @COVID19_SL`);
                     hook.setAvatar(process.env.avatar);
-                    hook.send(text + `\n– Vaccinated : ${this.people_vaccinated / 21919000 * 100}%`)
+                    hook.send(text + `\n– Vaccinated : ${this.people_vaccinated / this.population * 100}%`)
                     if (err) throw Error(err)
                     else return;
                 })
@@ -76,7 +78,7 @@ class Report {
 
             setTimeout(() => {
                 T.post('media/upload', { media_data: vaccination_chart }, (err, data) => {
-                    let text = `💉 About ${converter.toWords(this.people_vaccinated, SYSTEM.INTL).split(",")[0]} (${Math.floor(this.people_vaccinated / 21518299 * 100)}%) Sri Lankans have gotten at least one vaccine dose so far!\n\n– Total Vaccinations: ${Number(this.total_vaccinations).toLocaleString()}\n– Fully Vaccinated : ${Number(this.people_fully_vaccinated).toLocaleString()}\n– Daily Vaccinations : ${Number(this.daily_vaccinations).toLocaleString()}`;
+                    let text = `💉 About ${converter.toWords(this.people_vaccinated, SYSTEM.INTL).split(",")[0]} (${Math.floor(this.people_vaccinated / this.population * 100)}%) Sri Lankans have gotten at least one vaccine dose so far!\n\n– Total Vaccinations: ${Number(this.total_vaccinations).toLocaleString()}\n– Fully Vaccinated : ${Number(this.people_fully_vaccinated).toLocaleString()}\n– Daily Vaccinations : ${Number(this.daily_vaccinations).toLocaleString()}`;
                     let tweet = {
                         status: text + `\n\n    ~ 🇱🇰  STATUS ID ${Math.floor(Math.random()*1000)} ~\n[#COVID19SL #COVID19LK]`,
                         media_ids: [data.media_id_string]
@@ -217,13 +219,13 @@ cron.schedule('0 0-23 * * *', async () => {
     await mongoose.connect(process.env.URI, { useNewUrlParser: true, useUnifiedTopology: true })
     let infection_api = await fetch('https://www.hpb.health.gov.lk/api/get-current-statistical')
     let vaccination_api = await fetch('https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.json')
-    let population_api = await fetch("https://restcountries.eu/rest/v2/alpha/lka")
+    let population_api = await axios.get("https://www.worldometers.info/world-population/sri-lanka-population")
     let infection_api_res = await infection_api.json()
     let vaccination_api_res = await vaccination_api.json()
-    let population_api_res = await population_api.json()
+    let $ = cheerio.load(population_api.data);
     let infection_data = infection_api_res.data
     let vaccination_data = vaccination(vaccination_api_res)
-    let population_data = population_api_res.population
+    let population_data = parseInt($('div .col-md-8.country-pop-description').children().children().first().text().split(" ")[7].replace(",", "").replace(",", ""))
     let date = new Date()
     let local_timezone = displayTime(date, findTimeZone('Asia/Colombo'))
     let local_day = moment(local_timezone).format('dddd')
