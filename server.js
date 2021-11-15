@@ -32,7 +32,7 @@ const server = http.createServer((req, res) => {
     res.end()
 })
 
-herokuAwake("http://covid.shameel-fazul.systems/");
+herokuAwake("https://covid19sl-production.herokuapp.com");
 server.listen(process.env.PORT || 3000, () => console.log('COVID19SL > server is running'))
 
 class Report {
